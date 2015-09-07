@@ -25,5 +25,8 @@
   "dependencies": {
     "nan": "^2.0.8"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "scripts": {
+    "install": "node-gyp rebuild --target=0.31.2 --dist-url=https://atom.io/download/atom-shell"
+  }
 }
