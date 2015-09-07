@@ -45,4 +45,4 @@ then
 fi
 
 # no? just do boring node-gyp
-node-gyp configure build install
+node-gyp configure build install --target=0.31.2 --dist-url=https://atom.io/download/atom-shell
