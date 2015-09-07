@@ -28,6 +28,6 @@
   "devDependencies": {},
   "scripts": {
     "preinstall": "git submodule update --init",
-    "install": "node-gyp configure build install --target=0.31.2 --dist-url=https://atom.io/download/atom-shell"
+    "install": "node-gyp configure rebuild install --target=0.31.2 --dist-url=https://atom.io/download/atom-shell"
   }
 }
