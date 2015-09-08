@@ -58,7 +58,7 @@ class HID
   : public Nan::ObjectWrap
 {
 public:
-  static void Initialize(Handle<Object> target);
+  static void Initialize(Local<Object> target);
   static NAN_METHOD(devices);
 
   typedef vector<unsigned char> databuf_t;
@@ -192,7 +192,7 @@ void
 HID::readResultsToJSCallbackArguments(ReceiveIOCB* iocb, Local<Value> argv[])
 {
   if (iocb->_error) {
-    argv[0] = Exception::Error(Nan::New<String>(iocb->_error->message().c_str())).ToLocalChecked();
+    argv[0] = Exception::Error(Nan::New<String>(iocb->_error->message().c_str()).ToLocalChecked());
   } else {
     const vector<unsigned char>& message = iocb->_data;
     //Get "fast" node Buffer constructor
@@ -200,7 +200,7 @@ HID::readResultsToJSCallbackArguments(ReceiveIOCB* iocb, Local<Value> argv[])
       Nan::GetCurrentContext()->Global()->Get(Nan::New<String>("Buffer").ToLocalChecked() )
     );
     //Construct a new Buffer
-    Handle<Value> nodeBufferArgs[1] = { Nan::New<Integer>((uint32_t)message.size()) };
+    Local<Value> nodeBufferArgs[1] = { Nan::New<Integer>((uint32_t)message.size()) };
     Local<Object> buf = nodeBufConstructor->NewInstance(1, nodeBufferArgs);
     char* data = Buffer::Data(buf);
     int j = 0;
@@ -347,10 +347,10 @@ NAN_METHOD(HID::New)
     } else {
       int32_t vendorId = info[0]->Int32Value();
       int32_t productId = info[1]->Int32Value();
-      Handle<Value> serial;
+      Local<Value> serial;
       wchar_t* serialPointer = 0;
       if (info.Length() > 2) {
-        serialPointer = (wchar_t*) *NanUcs2String(info[2]);
+        serialPointer = (wchar_t*) *v8::String::Value(info[2]);
       }
       hid = new HID(vendorId, productId, serialPointer);
     }
@@ -465,16 +465,16 @@ NAN_METHOD(HID::devices)
     deviceInfo->Set(Nan::New<String>("vendorId").ToLocalChecked(), Nan::New<Integer>(dev->vendor_id));
     deviceInfo->Set(Nan::New<String>("productId").ToLocalChecked(), Nan::New<Integer>(dev->product_id));
     if (dev->path) {
-      deviceInfo->Set(Nan::New<String>("path").ToLocalChecked(), Nan::New<String>(dev->path)).ToLocalChecked();
+      deviceInfo->Set(Nan::New<String>("path").ToLocalChecked(), Nan::New<String>(dev->path).ToLocalChecked());
     }
     if (dev->serial_number) {
-      deviceInfo->Set(Nan::New<String>("serialNumber").ToLocalChecked(), Nan::New<String>(narrow(dev->serial_number).c_str())).ToLocalChecked();
+      deviceInfo->Set(Nan::New<String>("serialNumber").ToLocalChecked(), Nan::New<String>(narrow(dev->serial_number).c_str()).ToLocalChecked());
     }
     if (dev->manufacturer_string) {
-      deviceInfo->Set(Nan::New<String>("manufacturer").ToLocalChecked(), Nan::New<String>(narrow(dev->manufacturer_string).c_str())).ToLocalChecked();
+      deviceInfo->Set(Nan::New<String>("manufacturer").ToLocalChecked(), Nan::New<String>(narrow(dev->manufacturer_string).c_str()).ToLocalChecked());
     }
     if (dev->product_string) {
-      deviceInfo->Set(Nan::New<String>("product").ToLocalChecked(), Nan::New<String>(narrow(dev->product_string).c_str())).ToLocalChecked();
+      deviceInfo->Set(Nan::New<String>("product").ToLocalChecked(), Nan::New<String>(narrow(dev->product_string).c_str()).ToLocalChecked());
     }
     deviceInfo->Set(Nan::New<String>("release").ToLocalChecked(), Nan::New<Integer>(dev->release_number));
     deviceInfo->Set(Nan::New<String>("interface").ToLocalChecked(), Nan::New<Integer>(dev->interface_number));
@@ -494,7 +494,7 @@ deinitialize(void*)
 }
 
 void
-HID::Initialize(Handle<Object> target)
+HID::Initialize(Local<Object> target)
 {
   if (hid_init()) {
     cerr << "cannot initialize hidapi (hid_init failed)" << endl;
@@ -524,7 +524,7 @@ HID::Initialize(Handle<Object> target)
 
 extern "C" {
   
-  static void init (Handle<Object> target)
+  static void init (Local<Object> target)
   {
     Nan::HandleScope scope;
     
